@@ -1,5 +1,12 @@
 package com.example.gpstest2;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.app.Activity;
@@ -9,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+
 public class MainActivity extends Activity {
 
 	private static final String TAG = "MainActivity";
@@ -16,12 +24,14 @@ public class MainActivity extends Activity {
 	private TextView mLatitudeTextView;
 	private Button mUpdateButton;
 	private LocationService mLocationService;
+	private Geocoder mGeoCoder;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		mGeoCoder = new Geocoder(this, Locale.US);
 		mLocationService = new LocationService(this);
 		mLongitudeTextView = (TextView) findViewById(R.id.longitude_textView);
 		mLatitudeTextView = (TextView) findViewById(R.id.latitude_textView);
@@ -36,6 +46,25 @@ public class MainActivity extends Activity {
 					if(location != null){
 						mLongitudeTextView.setText(Double.toString(location.getLongitude()));
 						mLatitudeTextView.setText(Double.toString(location.getLatitude()));
+						List<Address> list = new ArrayList<Address>();
+						if(mGeoCoder.isPresent()) {
+							Log.d(TAG,"Present");
+						} else {
+							Log.d(TAG,"Not Present");
+						}
+//						try {
+//							list = mGeoCoder.getFromLocation(location.getLatitude(), location.getLongitude(), 10);
+//						} catch (IOException e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
+//						
+						try {
+							list = mGeoCoder.getFromLocationName("15050 SW Koll ParkWay, Beaverton, OR 97006", 5);
+						} catch (IOException e) {
+							
+						}
+						Log.d(TAG, list.toString());
 					}
 				} else {
 					mLocationService.showSettingsAlert();
